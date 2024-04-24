@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, Output, AfterContentInit, ContentChildren, QueryList, ViewChild, AfterViewInit, ViewChildren, ChangeDetectorRef, ElementRef } from '@angular/core';
+import { Component, EventEmitter, Output, AfterContentInit, ContentChildren, QueryList, ViewChild, AfterViewInit, ViewChildren, ChangeDetectorRef, ElementRef, Renderer2 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { User } from './auth-form.interface';
 import { AuthRememberComponent } from '../auth-remember/auth-remember.component';
@@ -53,9 +53,16 @@ export class AuthFormComponent implements AfterContentInit, AfterViewInit {
   ngAfterViewInit(): void {
     //console.log(this.messageComponent);
     //console.log(this.email.nativeElement);
-    this.email.nativeElement.setAttribute('placeholder', 'Enter your email address');
-    this.email.nativeElement.classList.add('email');
-    this.email.nativeElement.focus();
+
+    //nativeElement only works on web//
+    // this.email.nativeElement.setAttribute('placeholder', 'Enter your email address');
+    // this.email.nativeElement.classList.add('email');
+    // this.email.nativeElement.focus();
+
+    //for platform agnostic, use renderer to modify elements
+    this.renderer.setAttribute(this.email.nativeElement, "placeholder", "Enter your email address");
+    this.renderer.addClass(this.email.nativeElement, "email");
+    this.renderer.selectRootElement(this.email.nativeElement).focus();
 
     if (this.messageComponents) {
       this.messageComponents.forEach(component => {
@@ -67,7 +74,7 @@ export class AuthFormComponent implements AfterContentInit, AfterViewInit {
 
   }
 
-  constructor(private cd: ChangeDetectorRef,) {
+  constructor(private cd: ChangeDetectorRef, private renderer: Renderer2) {
   }
 
   showMessage: boolean = false;
