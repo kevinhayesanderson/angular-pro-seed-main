@@ -1,14 +1,14 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, Output, AfterContentInit, ContentChildren, QueryList  } from '@angular/core';
+import { Component, EventEmitter, Output, AfterContentInit, ContentChildren, QueryList, ViewChild, AfterViewInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { User } from './auth-form.interface';
 import { AuthRememberComponent } from '../auth-remember/auth-remember.component';
+import { AuthMessageComponent } from "../auth-message/auth-message.component";
 
 
 @Component({
   selector: 'auth-form',
   standalone: true,
-  imports: [CommonModule, FormsModule],
   template: `
   <div>
       <form (ngSubmit)="onSubmit(form.value)" #form="ngForm">
@@ -21,18 +21,28 @@ import { AuthRememberComponent } from '../auth-remember/auth-remember.component'
           Password
           <input type="password" name="password" ngModel>
         </label>
-        <ng-content select="auth-remember">
+        <ng-content select="auth-remember"> <!-- content child -->
         </ng-content>
-        <div *ngIf="showMessage">You will be logged in for 30 days</div>
+        <!-- <div *ngIf="showMessage">You will be logged in for 30 days</div> -->
+        <auth-message 
+        [style.display]="(showMessage ? 'inherit':'none')"> <!-- view child  -->
+        </auth-message>
         <ng-content select="button"></ng-content>
       </form>
     </div>
-  `
+  `,
+  imports: [CommonModule, FormsModule, AuthMessageComponent]
 })
-export class AuthFormComponent implements AfterContentInit {
-  
+export class AuthFormComponent implements AfterContentInit, AfterViewInit {
+
+  @ViewChild(AuthMessageComponent) messageComponent!: AuthMessageComponent;
+
+  ngAfterViewInit(): void {
+    //console.log(this.messageComponent);
+  }
+
   showMessage: boolean = false;
- 
+
   @Output() submitted: EventEmitter<User> = new EventEmitter<User>();
 
   @ContentChildren(AuthRememberComponent)
@@ -40,10 +50,15 @@ export class AuthFormComponent implements AfterContentInit {
 
 
   ngAfterContentInit(): void {
-    if(this.rememberComponents){
+
+    if (this.messageComponent) {
+      this.messageComponent.days = 30;
+    }
+
+    if (this.rememberComponents) {
       console.log(this.rememberComponents);
       this.rememberComponents.forEach(component => {
-        component.checked.subscribe((checked:boolean) => this.showMessage = checked );
+        component.checked.subscribe((checked: boolean) => this.showMessage = checked);
       });
       //this.rememberComponent.checked.subscribe((checked:boolean) => this.showMessage = checked );
     }
