@@ -23,7 +23,9 @@ export class AppComponent {
   constructor(private viewContainer: ViewContainerRef) { }
 
   ngOnInit(): void {
-    this.entry.createComponent(AuthFormComponent);
+    var componentRef = this.entry.createComponent(AuthFormComponent);
+    componentRef.instance.title = "Create Account";
+    componentRef.instance.submitted.subscribe(this.loginUser);
     //this.viewContainer.createComponent(AuthFormComponent); //loading at end
   }
 

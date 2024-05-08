@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Output } from '@angular/core';
+import { Component, EventEmitter, Input, input, Output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { User } from './auth-form.interface';
 import { CommonModule } from '@angular/common';
@@ -31,7 +31,7 @@ import { AuthMessageComponent } from '../auth-message/auth-message.component';
    `],
 })
 export class AuthFormComponent {
-  title="Login";
+  @Input() title: string ="Login";
 
   @Output() submitted: EventEmitter<User> = new EventEmitter<User>();
 
