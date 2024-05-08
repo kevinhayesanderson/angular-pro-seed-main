@@ -11,11 +11,13 @@ import { AuthFormComponent } from "./auth-form/auth-form.component";
     <!-- <auth-form (submitted)="loginUser($event)"></auth-form> -->
     <div #entry><div>
     <button (click)="destroyComponent()">Destroy</button>
+    <button (click)="moveComponent()">Move</button>
   </div>
   `,
   imports: [RouterOutlet, AuthFormComponent],
 })
 export class AppComponent {
+
   title = 'app';
 
   @ViewChild("entry", { read: ViewContainerRef, static: true }) entry!: ViewContainerRef;
@@ -25,7 +27,9 @@ export class AppComponent {
   constructor(private viewContainer: ViewContainerRef) { }
 
   ngOnInit(): void {
-    this.componentRef = this.entry.createComponent(AuthFormComponent);
+    this.entry.createComponent(AuthFormComponent);
+    this.componentRef = this.entry.createComponent(AuthFormComponent, { index: 0 });
+
     this.componentRef.instance.title = "Create Account";
     this.componentRef.instance.submitted.subscribe(this.loginUser);
     //this.viewContainer.createComponent(AuthFormComponent); //loading at end
@@ -37,5 +41,9 @@ export class AppComponent {
 
   destroyComponent() {
     this.componentRef?.destroy();
+  }
+
+  moveComponent() {
+    this.entry.move(this.componentRef.hostView, 1);
   }
 }
